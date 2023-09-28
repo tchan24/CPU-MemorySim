@@ -1,7 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <unistd.h> // For pipe and fork
+#include <sstream>
+
 
 class Memory {
 public:
@@ -18,93 +19,38 @@ public:
         memory[address] = data;
     }
 
+    void printMemory(int start, int end) {
+        for (int i = start; i <= end; ++i) {
+            std::cout << "Address: " << i << " Value: " << memory[i] << std::endl;
+        }
+    }
+
 private:
     std::vector<int> memory;
 
     void loadProgram(const std::string& filename) {
-        std::ifstream file(filename);
-        int address = 0;
+    std::ifstream file(filename);
+    if (!file) {
+        std::cerr << "Unable to open file: " << filename << std::endl;
+        return;
+    }
+    int address = 0;
+    std::string line;
+    while (std::getline(file, line)) {
+        std::istringstream iss(line);
         int value;
-        while (file >> value) {
+        while (iss >> value) {
+            std::cout << "Reading Address: " << address << " Value: " << value << std::endl;
             memory[address++] = value;
         }
     }
-};
-
-class CPU {
-public:
-    CPU(int fd[2]) : PC(0), SP(999), IR(0), AC(0), X(0), Y(0) {
-        fd[0] = fd[0];
-        fd[1] = fd[1];
+    file.close();
     }
 
-    void run() {
-        while (true) {
-            fetch();
-            execute();
-        }
-    }
-
-private:
-    int PC, SP, IR, AC, X, Y;
-    int fd[2];
-
-    void fetch() {
-        // Fetch the instruction at PC from memory
-        write(fd[1], &PC, sizeof(PC));
-        read(fd[0], &IR, sizeof(IR));
-        PC++;
-    }
-
-    void execute() {
-        switch (IR) {
-            case 1: // Load value
-                fetch();
-                AC = IR;
-                break;
-            case 2: // Load addr
-                fetch();
-                write(fd[1], &IR, sizeof(IR));
-                read(fd[0], &AC, sizeof(AC));
-                break;
-            case 7: // Store addr
-                fetch();
-                write(fd[1], &IR, sizeof(IR));
-                write(fd[1], &AC, sizeof(AC));
-                break;
-            case 50: // End instruction
-                terminate();
-                break;
-        }
-    }
-
-    void terminate() {
-        exit(0);
-    }
 };
 
 int main() {
-    int fd[2];
-    pipe(fd);
-
-    if (fork() == 0) {
-        // Child Process (Memory Process)
-        close(fd[1]); // Close writing end of pipe
-        Memory memory("test.txt");
-        while (true) {
-            int address;
-            read(fd[0], &address, sizeof(address));
-            if (address == -1) break; // Termination signal
-            int value = memory.read(address);
-            std::cout << "Memory Read Address: " << address << " Value: " << value << std::endl;
-            write(fd[0], &value, sizeof(value));
-        }
-        close(fd[0]); // Close reading end of pipe
-    } else {
-        // Parent Process (CPU Process)
-        close(fd[0]); // Close reading end of pipe
-        CPU cpu(fd);
-        cpu.run();
-    }
+    Memory memory("test.txt");
+    memory.printMemory(0, 15); // Print memory content from address 0 to 15
     return 0;
 }
