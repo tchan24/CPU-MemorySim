@@ -33,7 +33,10 @@ private:
 
 class CPU {
 public:
-    CPU(int fd[2]) : PC(0), SP(999), IR(0), AC(0), X(0), Y(0), fd(fd) {}
+    CPU(int fd[2]) : PC(0), SP(999), IR(0), AC(0), X(0), Y(0) {
+        fd[0] = fd[0];
+        fd[1] = fd[1];
+    }
 
     void run() {
         while (true) {
@@ -93,6 +96,7 @@ int main() {
             read(fd[0], &address, sizeof(address));
             if (address == -1) break; // Termination signal
             int value = memory.read(address);
+            std::cout << "Memory Read Address: " << address << " Value: " << value << std::endl;
             write(fd[0], &value, sizeof(value));
         }
         close(fd[0]); // Close reading end of pipe
