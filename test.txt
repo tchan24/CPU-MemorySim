@@ -1,0 +1,7 @@
+1  // Load value instruction
+5  // Load the value 5 into the AC
+2  // Load addr instruction
+10  // Load the value at address 10 into the AC
+7  // Store addr instruction
+15  // Store the value in the AC into address 15
+50  // End instruction

@@ -87,7 +87,7 @@ int main() {
     if (fork() == 0) {
         // Child Process (Memory Process)
         close(fd[1]); // Close writing end of pipe
-        Memory memory("path/to/program.txt");
+        Memory memory("test.txt");
         while (true) {
             int address;
             read(fd[0], &address, sizeof(address));
