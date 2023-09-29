@@ -83,6 +83,11 @@ int main() {
     int fd[2];
     pipe(fd);
 
+    fork();
+    CPU cpu(fd);
+    cpu.run();
+
+    /*
     if (fork() == 0) {
         close(fd[1]);
         Memory memory("test.txt");
@@ -99,5 +104,6 @@ int main() {
         CPU cpu(fd);
         cpu.run();
     }
+    */
     return 0;
 }
