@@ -41,6 +41,7 @@ public:
     void run() {
         while (true) {
             fetch();
+            std::cout << "Fetched Instruction: " << IR << std::endl; // Debug output
             execute();
         }
     }
@@ -51,7 +52,9 @@ private:
 
     void fetch() {
         write(fd[1], &PC, sizeof(PC));
+        std::cout << "Sent Address: " << PC << std::endl; // Debug output
         read(fd[0], &IR, sizeof(IR));
+        std::cout << "Received Value: " << IR << std::endl; // Debug output
         PC++;
     }
 
@@ -60,8 +63,10 @@ private:
             case 1: // Load value
                 fetch();
                 AC = IR;
+                std::cout << "Loaded Value: " << AC << " into AC" << std::endl; // Debug output
                 break;
             case 50: // End instruction
+                std::cout << "End Instruction Executed" << std::endl; // Debug output
                 terminate();
                 break;
         }
