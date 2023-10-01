@@ -86,7 +86,5 @@ public class Memory {
         {
             throw new RuntimeException(exception);
         }
-
-        
     }
 }
