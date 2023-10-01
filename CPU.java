@@ -1,5 +1,4 @@
 import java.util.*;
-import java.lang.*;
 import java.io.*;
 
 public class CPU 
@@ -352,6 +351,132 @@ public class CPU
                     instr++;
                 }
                 break;
+
+            case 21:
+                PC++;
+                ops = readMemory(PC, pwMem, scMem);
+                if (AC == 0)
+                {
+                    PC = ops;
+                }
+                else
+                {
+                    PC++;
+                }
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 22:
+                PC++;
+                ops = readMemory(PC, pwMem, scMem);
+                if (AC != 0)
+                {
+                    PC = ops;
+                }
+                else
+                {
+                    PC++;
+                }
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 23:
+                PC++;
+                ops = readMemory(PC, pwMem, scMem);
+                stackPush(PC + 1);
+                userStack = SP;
+                PC = ops;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 24:
+                PC = stackPop();
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 25:
+                X++;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 26:
+                X--;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 27:
+                stackPush(AC);
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 28:
+                AC = stackPop();
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 29:
+                interrupt = true;
+                kernel = false;
+                ops = SP;
+                SP = 2000;
+                stackPush(ops);
+                ops = PC + 1;
+                PC = 1500;
+                stackPush(ops);
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 30:
+                PC = stackPop();
+                SP = stackPop();
+                kernel = true;
+                instr++;
+                interrupt = false;
+                break;
+
+            case 50:
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                System.exit(0);
+                break;
+            
+            default:
+                System.out.println("Instruction given not valid");
+                System.exit(0);
+                
         }
     }
 }
