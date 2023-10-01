@@ -120,18 +120,6 @@ public class CPU
         pwMem.flush(); 
     }
 
-    // contains all the instruction types and actions
-    static void instructor(int val, PrintWriter pwMem, Scanner scMem)
-    {
-        IR = val;
-        int ops;
-
-        switch(IR)
-        {
-            //50 cases
-        }
-    }
-
     // stack pop function - increment SP, get value from memory into temp and pop
     static int stackPop()
     {
@@ -146,5 +134,224 @@ public class CPU
     {
         SP--;
         writeMemory(SP, value, pwMem);
+    }
+
+
+// contains all the instruction types and actions
+    static void instructor(int val, PrintWriter pwMem, Scanner scMem)
+    {
+        IR = val;
+        int ops;
+
+        switch(IR)
+        {
+            //50 cases
+            case 1:
+                PC++;
+                AC = readMemory(PC, pwMem, scMem);
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+            
+            case 2:
+                PC++;
+                ops = readMemory(PC, pwMem, scMem);
+                AC = readMemory(ops, pwMem, scMem);
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 3:
+                PC++;
+                ops = readMemory(PC, pwMem, scMem);
+                ops = readMemory(ops, pwMem, scMem);
+                AC = readMemory(ops, pwMem, scMem);
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+            
+            case 4:
+                PC++;
+                ops = readMemory(PC, pwMem, scMem);
+                AC = readMemory((ops + X), pwMem, scMem);
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 5:
+                PC++;
+                ops = readMemory(PC, pwMem, scMem);
+                AC = readMemory((ops + Y), pwMem, scMem);
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 6:
+                AC = readMemory((SP + X), pwMem, scMem);
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+                
+            case 7:
+                PC++;
+                ops = readMemory(PC, pwMem, scMem);
+                writeMemory(ops, AC, pwMem);
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 8:
+                AC = (int)(Math.floor(Math.random() * (100) + 1));
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+            
+            case 9:
+                PC++;
+                ops = readMemory(PC, pwMem, scMem);
+                if (ops ==1)
+                {
+                    System.out.print(AC);
+                    PC++;
+                    if (!interrupt)
+                    {
+                        instr++;
+                    }
+                    break;
+                }
+                else if (ops == 2)
+                {
+                    System.out.print((char) AC);
+                    PC++;
+                    if (!interrupt)
+                    {
+                        instr++;
+                    }
+                    break;
+                }
+
+            case 10:
+                AC += X;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 11:
+                AC += Y;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+            
+            case 12:
+                AC -= X;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 13:
+                AC -= Y;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 14:
+                X = AC;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 15:
+                AC = X;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 16:
+                Y = AC;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 17:
+                AC = Y;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 18:
+                SP = AC;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 19:
+                AC = SP;
+                PC++;
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+
+            case 20:
+                PC++;
+                PC = readMemory(PC, pwMem, scMem);
+                if (!interrupt)
+                {
+                    instr++;
+                }
+                break;
+        }
     }
 }
