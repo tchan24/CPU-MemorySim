@@ -4,6 +4,7 @@ import java.io.*;
 public class Memory {
 
     final static int[] memory = new int[2000];
+
     public static void main(String []args) 
     {
         Scanner input = new Scanner(System.in);
@@ -46,7 +47,6 @@ public class Memory {
                 break;
             }
         }
-        input.close();
     }
 
     static void readFile(File file)
@@ -80,7 +80,6 @@ public class Memory {
                     }
                 }
             }
-            in.close();
         }
         catch  (FileNotFoundException exception) //file not found exception thrown if the file is missing
         {

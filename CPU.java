@@ -3,49 +3,59 @@ import java.io.*;
 
 public class CPU 
 {
+    // variables for program counter, stack pointer, instruction register, AC, x and y registers
     static int  PC = 0,
                 SP = 1000,
                 IR = 0,
                 AC = 0,
                 X = 0,
                 Y = 0;
+    // variables for timer, instruction, and user/system stack
     static int  userTimer,
                 instr = 0,
                 userStack = 1000,
                 sysStack = 2000;
+
+    // variables for memory
+    static InputStream isMem;
+    static OutputStream osMem;
+    static PrintWriter pwMem;
+    static Scanner scMem;
+
+
+    // variables for interrupt and kernel
     static boolean kernel = true;
     static boolean interrupt = false;
 
-    static Scanner scMem;
-    static OutputStream osMem;
-    static InputStream isMem;
-    static PrintWriter pwMem;
-
     public static void main(String []args) 
     {    
-        String inFile = args[0]; // Get input file name from command line
+        String inFile;
+        inFile = args[0]; // Get input file name from command line
         userTimer = Integer.parseInt(args[1]); // Get user timer from command line
-
         try
         {
             Runtime rt = Runtime.getRuntime();
             Process proc = rt.exec("java Memory"); // Run Memory.java
             
             // Set up input and output streams
+            isMem = proc.getInputStream();
             osMem = proc.getOutputStream();
             pwMem = new PrintWriter(osMem);
-
-            isMem = proc.getInputStream();
             scMem = new Scanner(isMem);
 
-            pwMem.printf(inFile + "/n");
+            pwMem.printf(inFile + "\n");
             pwMem.flush();
 
             while(true)
             {
-                if ((instr % userTimer == 0) && (instr > 0) && (!interrupt))
+                System.out.println("we're here?");
+                if ((instr % userTimer == 0) && (instr >= 0) && (!interrupt))
                 {
+                    System.out.println("here");
                     interrupt = true;
+                    callInterrupt();
+                    /*
+                    // call interrupt
                     kernel = false;
                     int temp = SP;
                     SP = sysStack;
@@ -53,12 +63,12 @@ public class CPU
                     temp = PC;
                     PC = 1000;
                     stackPush(temp);
+                    */
                 }
-
-                int instrRead = readMemory(PC, pwMem, scMem);
-                if (instrRead != -1)
+                int instrIn = readMemory(PC, pwMem, scMem);
+                if (instrIn != -1)
                 {
-                    instructor(instrRead, pwMem, scMem);
+                    instructor(instrIn, pwMem, scMem);
                 }
                 else
                 {
@@ -66,9 +76,11 @@ public class CPU
                 }
             }
 
+            
             proc.waitFor();
             int exitValue = proc.exitValue();
             System.out.println("\nProcess exit - " + exitValue);
+            
         }
         catch (Throwable throwable)
         {
@@ -76,7 +88,7 @@ public class CPU
         }
     }
 
-    /*
+    
     // interrupt - false kernel - old stack > new @ 2000 after interrupt
     static void callInterrupt()
     {
@@ -84,11 +96,12 @@ public class CPU
         int temp = SP;
         SP = sysStack;
         stackPush(temp);
+
         temp = PC;
         PC = 1000;
         stackPush(temp);
     }
-    */
+    
 
     // read data - Mem to address
     static int readMemory(int memAddr, PrintWriter pwMem, Scanner scMem)
