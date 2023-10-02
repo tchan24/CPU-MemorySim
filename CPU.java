@@ -17,6 +17,7 @@ public class CPU {
                 systemStack = 2000, // system stack start
                 userStack = 1000; // user stack start
 
+    // I/O
     static PrintWriter output;
     static InputStream input;
     static OutputStream outObj;
@@ -26,28 +27,30 @@ public class CPU {
     {
 
         String file;
-        
-        //if arguments are satisfied then extract the file and the timer interrupt value from user
+        // get file name and user timer input
         file = args[0];
         userTimer = Integer.parseInt(args[1]);
         
         try 
         {
-
+            // run memory
             Runtime rtime = Runtime.getRuntime();
             Process process = rtime.exec("java Memory");
 
+            // I/O
             input = process.getInputStream();
             outObj = process.getOutputStream();
             output = new PrintWriter(outObj);
             sc = new Scanner(input);
 
+            // send file name to memory
             output.printf(file + "\n");
             output.flush();
 
            
             while (true) 
             {
+                // check if user timer is up
                 if ( (instr > 0 )&& (instr % userTimer == 0) && (!interrupt) ) 
                 {
 
@@ -55,6 +58,7 @@ public class CPU {
                     callInterrupt();
                 }
                 
+                // read instruction from memory
                 int readInstr = readMemory(PC, output, sc);
                 if (readInstr != -1) 
                 {
@@ -65,17 +69,19 @@ public class CPU {
                     break;
                 }
             }
+            // close I/O
             process.waitFor();
             int exitValue = process.exitValue();
             System.out.println("\nProcess exited: " + exitValue);
         }
+        // catch errors
         catch (Throwable throwable) 
         {
             throwable.printStackTrace();
         }
     }
 
-
+    // read and write memory
     static int readMemory(int address, PrintWriter output, Scanner sc) 
     {
         if (kernel && (address > 1000))
@@ -102,6 +108,7 @@ public class CPU {
         output.flush();
     }
 
+    //  instruction set from word document
     static void instructor (int val, PrintWriter output, Scanner sc) 
     {
         IR = val;
@@ -110,7 +117,7 @@ public class CPU {
         switch (IR) 
         {
 
-            case 1:
+            case 1: // load value
                 PC++;
                 AC = readMemory(PC, output, sc);
                 PC++;
@@ -119,7 +126,7 @@ public class CPU {
                 }
                 break;
 
-            case 2:
+            case 2: // load addr
                 PC++;
                 opVal = readMemory(PC, output, sc);
                 AC = readMemory(opVal, output, sc);
@@ -129,7 +136,7 @@ public class CPU {
                 }
                 break;
 
-            case 3:
+            case 3: // loadInd addr
                 PC++;
                 opVal = readMemory(PC, output, sc) ;
                 opVal = readMemory(opVal, output, sc);
@@ -140,7 +147,7 @@ public class CPU {
                 }
                 break;
 
-            case 4:
+            case 4: // loadIdxX addr
                 PC++;
                 opVal = readMemory(PC, output, sc);
                 AC = readMemory((opVal+X), output, sc);
@@ -150,7 +157,7 @@ public class CPU {
                 }
                 break;
 
-            case 5:
+            case 5: // loadIdxY addr
                 PC++;
                 opVal = readMemory(PC, output, sc);
                 AC = readMemory((opVal + Y), output, sc);
@@ -160,7 +167,7 @@ public class CPU {
                 }
                 break;
 
-            case 6:
+            case 6: // loadSpX
                 AC = readMemory(SP + X, output, sc);
                 PC++;
                 if (!interrupt) {
@@ -168,7 +175,7 @@ public class CPU {
                 }
                 break;
 
-            case 7:
+            case 7: // store addr
                 PC++;
                 opVal = readMemory(PC, output, sc);
                 writeMemory(opVal, AC, output);
@@ -178,7 +185,7 @@ public class CPU {
                 }
                 break;
 
-            case 8:
+            case 8: // get random int
                 int min = 1, max = 100;
                 AC = (int)(Math.floor(Math.random() * (max - min + 1) + min));
                 PC++;
@@ -187,7 +194,7 @@ public class CPU {
                 }
                 break;
 
-            case 9:
+            case 9: // put port
                 PC++;
                 opVal = readMemory(PC, output, sc);
                 if (opVal == 1) {
@@ -207,7 +214,7 @@ public class CPU {
                     break;
                 }
 
-            case 10:
+            case 10: // addX
                 AC += X;
                 PC++;
                 if (!interrupt) {
@@ -215,7 +222,7 @@ public class CPU {
                 }
                 break;
 
-            case 11:
+            case 11: // addY
                 AC += Y;
                 PC++;
                 if (!interrupt) {
@@ -223,7 +230,7 @@ public class CPU {
                 }
                 break;
 
-            case 12:
+            case 12: // subX
                 AC -= X;
                 PC++;
                 if (!interrupt) {
@@ -231,7 +238,7 @@ public class CPU {
                 }
                 break;
 
-            case 13:
+            case 13: // subY
                 AC -= Y;
                 PC++;
                 if (!interrupt) {
@@ -239,7 +246,7 @@ public class CPU {
                 }
                 break;
 
-            case 14:
+            case 14: // copyToX
                 X = AC;
                 PC++;
                 if (!interrupt) {
@@ -248,7 +255,7 @@ public class CPU {
 
                 break;
 
-            case 15:
+            case 15: // copyFromX
                 AC = X;
                 PC++;
                 if (!interrupt) {
@@ -256,7 +263,7 @@ public class CPU {
                 }
                 break;
 
-            case 16:
+            case 16: // copyToY
                 Y = AC;
                 PC++;
                 if (!interrupt) {
@@ -264,7 +271,7 @@ public class CPU {
                 }
                 break;
 
-            case 17:
+            case 17: // copyFromY
                 AC = Y;
                 PC++;
                 if (!interrupt) {
@@ -272,7 +279,7 @@ public class CPU {
                 }
                 break;
 
-            case 18:
+            case 18: // copyToSp
                 SP = AC;
                 PC++;
                 if (!interrupt) {
@@ -280,7 +287,7 @@ public class CPU {
                 }
                 break;
 
-            case 19:
+            case 19: // copyFromSp
                 AC = SP;
                 PC++;
                 if (!interrupt) {
@@ -288,7 +295,7 @@ public class CPU {
                 }
                 break;
 
-            case 20:
+            case 20: // jump addr
                 PC++;
                 PC = readMemory(PC, output, sc);
                 if (!interrupt) {
@@ -296,7 +303,7 @@ public class CPU {
                 }
                 break;
 
-            case 21:
+            case 21: // jumpIfEqual addr
                 PC++;
                 opVal = readMemory(PC, output, sc);
                 if (AC == 0) {
@@ -310,7 +317,7 @@ public class CPU {
                 }
                 break;
 
-            case 22:
+            case 22: // jumpIfNotEqual addr
                 PC++;
                 opVal = readMemory(PC, output, sc);
                 if (AC != 0) {
@@ -324,7 +331,7 @@ public class CPU {
                 }
                 break;
 
-            case 23:
+            case 23: // call addr
                 PC++;
                 opVal = readMemory(PC, output, sc);
                 stackPush(PC + 1);
@@ -335,14 +342,14 @@ public class CPU {
                 }
                 break;
 
-            case 24:
+            case 24: // ret
                 PC = stackPop();
                 if (!interrupt) {
                     instr++;
                 }
                 break;
 
-            case 25:
+            case 25: // incX
                 X++;
                 PC++;
                 if (!interrupt) {
@@ -350,7 +357,7 @@ public class CPU {
                 }
                 break;
 
-            case 26:
+            case 26: // decX
                 X--;
                 PC++;
                 if (!interrupt) {
@@ -358,7 +365,7 @@ public class CPU {
                 }
                 break;
 
-            case 27:
+            case 27: // push
                 stackPush(AC);
                 PC++;
                 if (!interrupt) {
@@ -366,7 +373,7 @@ public class CPU {
                 }
                 break;
 
-            case 28:
+            case 28: // pop
                 AC = stackPop();
                 PC++;
                 if (!interrupt) {
@@ -374,7 +381,7 @@ public class CPU {
                 }
                 break;
 
-            case 29:
+            case 29: // int
                 interrupt = true;
                 kernel = false;
                 opVal = SP;
@@ -390,7 +397,7 @@ public class CPU {
                 }
                 break;
 
-            case 30:
+            case 30: // iret
                 PC = stackPop();
                 SP = stackPop();
                 kernel = true;
@@ -398,25 +405,27 @@ public class CPU {
                 interrupt = false;
                 break;
 
-            case 50:
+            case 50: // end
                 if (!interrupt) {
                     instr++;
                 }
                 System.exit(0);
                 break;
 
-            default:
+            default: // error
                 System.out.println("Error Occurred, instruction invalid");
                 System.exit(0);
         }
     }
 
+    // stack push method
     static void stackPush(int val)
     {
         SP--;
         writeMemory(SP, val, output);
     }
 
+    // stack pop method
     static int stackPop()
     {
         int returnVal = readMemory(SP, output, sc);
@@ -425,13 +434,16 @@ public class CPU {
         return returnVal;
     }
 
+    // interrupt call
      static void callInterrupt() 
      {
+        // save SP and PC
         kernel = false;
         int temp = SP;
         SP = systemStack;
         stackPush(temp);
 
+        // save SP and PC
         temp = PC;
         PC = 1000;
         stackPush(temp);
