@@ -1,89 +1,93 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
+import java.lang.*;
 
 public class Memory {
 
-    final static int[] memory = new int[2000];
+    final static int[] arr = new int[2000];
 
     public static void main(String []args) 
     {
-        Scanner input = new Scanner(System.in);
-        if (input.hasNextLine())
+
+        Scanner in = new Scanner(System.in);
+        if (in.hasNextLine()) 
         {
-            File file = new File(input.nextLine());
-            readFile(file);
+            File file = new File(in.nextLine());
+            funcFileReader(file);
         }
 
-        while (true)
+        while (true) 
         {
-            String line = null;
+            String lineRead = null;
             int temp;
 
-            if (input.hasNext())
+            if (in.hasNext()) 
             {
-                line = input.nextLine();
-                if (line.isEmpty() == false)
+                lineRead = in.nextLine();
+                if (lineRead.isEmpty() == false) 
                 {
-                    String[] middle = line.split(",");
-                    if (middle[0].equals("1"))
+
+                    //comms between CPU and Memory
+                    String[] holder = lineRead.split(",");
+                    if (holder[0].equals("1")) 
                     {
-                        temp = Integer.parseInt(middle[1]);
-                        System.out.println(memory[temp]);
+                        temp = Integer.parseInt(holder[1]);
+                        System.out.println(arr[temp]);
                     }
-                    else if (middle[0].equals("2"))
+                    else if (holder[0].equals("2")) 
                     {
-                        int a = Integer.parseInt(middle[1]);
-                        int b = Integer.parseInt(middle[2]);
-                        memory[a] = b;
+                        int x = Integer.parseInt(holder[1]);
+                        int y = Integer.parseInt(holder[2]);
+                        arr[x] = y;
                     }
                 }
-                else
+                else 
                 {
                     break;
                 }
             }
-            else
+            else 
             {
                 break;
             }
         }
     }
-
-    static void readFile(File file)
+    static void funcFileReader(File file) 
     {
-        try
+        try 
         {
-            Scanner in = new Scanner(file);
-            int count = 0;
-            
-            while (in.hasNext())
+            int arrCounter = 0;
+            Scanner input = new Scanner(file);
+
+            while (input.hasNext())
             {
-                if (in.hasNextInt())
+                if (input.hasNextInt()) 
                 {
-                    int scanNum = in.nextInt();
-                    memory[count++] = scanNum;
+                    int scanInt = input.nextInt();
+                    arr[arrCounter++] = scanInt;
                 }
                 else
                 {
-                    String temp = in.next();
-                    if (temp.charAt(0) == '.')
+                    String temp = input.next();
+                    if(temp.charAt(0) == '.') 
                     {
-                        count = Integer.parseInt(temp.substring(1));
+                        arrCounter = Integer.parseInt(temp.substring(1));
                     }
-                    else if (temp.equals("//")) // skip the comments in the lines of input
+                    else if(temp.equals("//")) 
                     {
-                        in.nextLine();
+                        input.nextLine();
                     }
-                    else
+                    else 
                     {
-                        in.nextLine();
+                        input.nextLine();
                     }
                 }
             }
         }
-        catch  (FileNotFoundException exception) //file not found exception thrown if the file is missing
+        catch (FileNotFoundException e) 
         {
-            throw new RuntimeException(exception);
+            throw new RuntimeException(e);
         }
     }
+
 }
