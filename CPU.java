@@ -29,9 +29,11 @@ public class CPU
 
     public static void main(String []args) 
     {    
-        String inFile;
+
+        String inFile = null;
         inFile = args[0]; // Get input file name from command line
         userTimer = Integer.parseInt(args[1]); // Get user timer from command line
+        
         try
         {
             Runtime rt = Runtime.getRuntime();
@@ -51,6 +53,7 @@ public class CPU
                 System.out.println("we're here?");
                 if ((instr % userTimer == 0) && (instr >= 0) && (!interrupt))
                 {
+                
                     System.out.println("here");
                     interrupt = true;
                     callInterrupt();
@@ -65,6 +68,9 @@ public class CPU
                     stackPush(temp);
                     */
                 }
+                //////
+                System.out.println(readMemory(PC, pwMem, scMem));
+
                 int instrIn = readMemory(PC, pwMem, scMem);
                 if (instrIn != -1)
                 {
@@ -74,6 +80,7 @@ public class CPU
                 {
                     break;
                 }
+                
             }
 
             
@@ -117,8 +124,9 @@ public class CPU
         if (scMem.hasNext())
         {
             String str = scMem.next();
-            if (str.isEmpty() == false)
+            if (str.isEmpty() == true)
             {
+                System.out.println(str);
                 return Integer.parseInt(str);
             }
         }
@@ -489,7 +497,6 @@ public class CPU
             default:
                 System.out.println("Instruction given not valid");
                 System.exit(0);
-                
         }
     }
 }
