@@ -81,7 +81,22 @@ public class CPU {
         }
     }
 
-    // read and write memory
+    // interrupt call
+     static void callInterrupt() 
+     {
+        // save SP and PC
+        kernel = false;
+        int temp = SP;
+        SP = systemStack;
+        stackPush(temp);
+
+        // save SP and PC
+        temp = PC;
+        PC = 1000;
+        stackPush(temp);
+    }
+
+        // read and write memory
     static int readMemory(int address, PrintWriter output, Scanner sc) 
     {
         if (kernel && (address > 1000))
@@ -432,21 +447,6 @@ public class CPU {
         writeMemory(SP, 0, output);
         SP++;
         return returnVal;
-    }
-
-    // interrupt call
-     static void callInterrupt() 
-     {
-        // save SP and PC
-        kernel = false;
-        int temp = SP;
-        SP = systemStack;
-        stackPush(temp);
-
-        // save SP and PC
-        temp = PC;
-        PC = 1000;
-        stackPush(temp);
     }
 }
 

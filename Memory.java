@@ -8,42 +8,50 @@ public class Memory {
 
     public static void main(String []args) 
     {
-        // Read file
-        Scanner in = new Scanner(System.in);
-        if (in.hasNextLine()) 
+        // Initialize input scanner
+        Scanner input = new Scanner(System.in);
+
+        // Check for input file
+        if (input.hasNextLine()) 
         {
-            // Read file
-            File file = new File(in.nextLine());
-            funcFileReader(file);
+            // Get file from input
+            File theFile = new File(input.nextLine());
+            // Read data from file
+            readFile(theFile);
         }
 
+        // Loop for CPU input
         while (true) 
         {
             // Read from CPU
             String lineRead = null;
-            int temp;
+            int tmp;
 
             // Read from CPU
-            if (in.hasNext()) 
+            if (input.hasNext()) 
             {
-                lineRead = in.nextLine();
-                if (lineRead.isEmpty() == false) 
-                {
+                // Get next line
+                lineRead = input.nextLine();
 
+                // Check for empty
+                if (lineRead.isEmpty() == false)
+                {
                     //comms between CPU and Memory
-                    String[] holder = lineRead.split(",");
-                    if (holder[0].equals("1")) 
+                    String[] middle = lineRead.split(",");
+
+                    // Check for read
+                    if (middle[0].equals("1")) 
                     {
                         // Read from memory
-                        temp = Integer.parseInt(holder[1]);
-                        System.out.println(arr[temp]);
+                        tmp = Integer.parseInt(middle[1]);
+                        System.out.println(arr[tmp]);
                     }
-                    else if (holder[0].equals("2")) 
+                    else if (middle[0].equals("2")) 
                     {
                         // Write to memory
-                        int x = Integer.parseInt(holder[1]);
-                        int y = Integer.parseInt(holder[2]);
-                        arr[x] = y;
+                        int a = Integer.parseInt(middle[1]);
+                        int b = Integer.parseInt(middle[2]);
+                        arr[a] = b;
                     }
                 }
                 else 
@@ -59,46 +67,45 @@ public class Memory {
     }
 
     // Read file method
-    static void funcFileReader(File file) 
+    static void readFile(File theFile) 
     {
         try 
         {
             // Read file
-            int arrCounter = 0;
-            Scanner input = new Scanner(file);
+            int count = 0;
+            Scanner inFile = new Scanner(theFile);
 
-            while (input.hasNext())
+            while (inFile.hasNext())
             {
                 // Read file
-                if (input.hasNextInt()) 
+                if (inFile.hasNextInt()) 
                 {
                     
-                    int scanInt = input.nextInt();
-                    arr[arrCounter++] = scanInt;
+                    int i = inFile.nextInt();
+                    arr[count++] = i;
                 }
                 else
                 {
                 
-                    String temp = input.next();
-                    if(temp.charAt(0) == '.') 
+                    String tmp = inFile.next();
+                    if(tmp.charAt(0) == '.') 
                     {
-                        arrCounter = Integer.parseInt(temp.substring(1));
+                        count = Integer.parseInt(tmp.substring(1));
                     }
-                    else if(temp.equals("//")) 
+                    else if(tmp.equals("//")) 
                     {
-                        input.nextLine();
+                        inFile.nextLine();
                     }
                     else 
                     {
-                        input.nextLine();
+                        inFile.nextLine();
                     }
                 }
             }
         }
-        catch (FileNotFoundException e) 
+        catch (FileNotFoundException exception) 
         {
-            throw new RuntimeException(e);
+            throw new RuntimeException(exception);
         }
     }
-
 }
