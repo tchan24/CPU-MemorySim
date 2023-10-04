@@ -1,3 +1,6 @@
+// Tarun Chandrasekaran
+// 
+
 import java.io.*;
 import java.util.*;
 
@@ -6,22 +9,24 @@ public class CPU {
     static boolean  kernel = true, // user mode or kernel mode
                     interrupt = false; // interrupt call
 
-    static int  IR = 0, // instruction register
+    static int  userTimer, // user timer input
+                instr = 0, // instruction
+                systemStack = 2000, // system stack start
+                userStack = 1000, // user stack start
+                IR = 0, // instruction register
                 AC = 0, // accumulation counter
                 X = 0,  // x register
                 Y = 0,  // y register
                 PC = 0, // program counter
-                SP = 1000, // stack pointer
-                userTimer, // user timer input
-                instr = 0, // instruction
-                systemStack = 2000, // system stack start
-                userStack = 1000; // user stack start
+                SP = 1000; // stack pointer
 
-    // I/O
+    // scanner for input initialization
+    static Scanner sc;
+    // printwriter for output initialization
     static PrintWriter output;
+    // input and output stream initialization
     static InputStream input;
     static OutputStream outObj;
-    static Scanner sc;
 
     public static void main (String []args) 
     {
@@ -37,14 +42,18 @@ public class CPU {
             Runtime rtime = Runtime.getRuntime();
             Process process = rtime.exec("java Memory");
 
-            // I/O
+            // initialize I/O
             input = process.getInputStream();
+            // initialize output stream
             outObj = process.getOutputStream();
+            // initialize printwriter
             output = new PrintWriter(outObj);
+            // initialize scanner
             sc = new Scanner(input);
 
             // send file name to memory
             output.printf(file + "\n");
+            // flush output
             output.flush();
 
            
@@ -53,7 +62,7 @@ public class CPU {
                 // check if user timer is up
                 if ( (instr > 0 )&& (instr % userTimer == 0) && (!interrupt) ) 
                 {
-
+                    // call interrupt
                     interrupt = true;
                     callInterrupt();
                 }
@@ -62,16 +71,19 @@ public class CPU {
                 int readInstr = readMemory(PC, output, sc);
                 if (readInstr != -1) 
                 {
+                    // run instruction
                     instructor(readInstr, output, sc);
                 }
-                else 
+                else // error
                 {
-                    break;
+                    break; // exit
                 }
             }
             // close I/O
             process.waitFor();
+            // get exit value
             int exitValue = process.exitValue();
+            // print exit value and exit
             System.out.println("\nProcess exited: " + exitValue);
         }
         // catch errors
@@ -99,18 +111,25 @@ public class CPU {
         // read and write memory
     static int readMemory(int address, PrintWriter output, Scanner sc) 
     {
+        // check if user is trying to access kernel memory
         if (kernel && (address > 1000))
         {
             System.out.println("User tired to access unauthorized memory");
             System.exit(0);
         }
+        // send read request to memory and flush it
         output.printf("1," + address + "\n");
         output.flush();
+
+        // check if there is a next line
         if (sc.hasNext()) 
         {
+            // get next line
             String s = sc.next();
+            // check if line is empty
             if (s.isEmpty() == false) 
             {
+                // return value
                 return Integer.parseInt(s);
             }
         }
@@ -119,6 +138,7 @@ public class CPU {
 
     static void writeMemory(int address, int value, PrintWriter output) 
     {
+        // write to memory
         output.printf("2," + address + "," + value + "\n");
         output.flush();
     }
@@ -126,9 +146,12 @@ public class CPU {
     //  instruction set from word document
     static void instructor (int val, PrintWriter output, Scanner sc) 
     {
+        // set instruction register
         IR = val;
+        // operand value initialization
         int opVal;
 
+        // switch statement for instruction set
         switch (IR) 
         {
 
@@ -436,16 +459,22 @@ public class CPU {
     // stack push method
     static void stackPush(int val)
     {
+        // decrement stack pointer
         SP--;
+        // write to memory
         writeMemory(SP, val, output);
     }
 
     // stack pop method
     static int stackPop()
     {
+        // set return value to readMemory(SP, output, sc)
         int returnVal = readMemory(SP, output, sc);
+        // write to memory (SP, 0, output)
         writeMemory(SP, 0, output);
+        // increment stack pointer
         SP++;
+        // return returnVal
         return returnVal;
     }
 }

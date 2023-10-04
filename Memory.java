@@ -42,60 +42,69 @@ public class Memory {
                     // Check for read
                     if (middle[0].equals("1")) 
                     {
-                        // Read from memory
+                        // Get index
                         tmp = Integer.parseInt(middle[1]);
+                        // Print value
                         System.out.println(arr[tmp]);
                     }
-                    else if (middle[0].equals("2")) 
+                    else if (middle[0].equals("2")) // Check for write
                     {
-                        // Write to memory
+                        // Get index
                         int a = Integer.parseInt(middle[1]);
+                        //Get value
                         int b = Integer.parseInt(middle[2]);
+                        // Store in memory
                         arr[a] = b;
                     }
                 }
                 else 
                 {
-                    break;
+                    break; // Break on empty
                 }
             }
             else 
             {
-                break;
+                break; // Break on end
             }
         }
     }
 
-    // Read file method
+    // Read data from file method
     static void readFile(File theFile) 
     {
         try 
         {
-            // Read file
+            // index counter
             int count = 0;
+            // input scanner initialized
             Scanner inFile = new Scanner(theFile);
 
+            // Loop through file
             while (inFile.hasNext())
             {
-                // Read file
+                // Check for int
                 if (inFile.hasNextInt()) 
                 {
-                    
+                    // Get number and store in array
                     int i = inFile.nextInt();
                     arr[count++] = i;
                 }
+                // Handle non-int input
                 else
                 {
-                
+                    // Get next string
                     String tmp = inFile.next();
+                    // Check for index
                     if(tmp.charAt(0) == '.') 
                     {
                         count = Integer.parseInt(tmp.substring(1));
                     }
+                    //Check for comment
                     else if(tmp.equals("//")) 
                     {
                         inFile.nextLine();
                     }
+                    // Discard all others (edge case)
                     else 
                     {
                         inFile.nextLine();
@@ -103,6 +112,7 @@ public class Memory {
                 }
             }
         }
+        // Handle exceptions
         catch (FileNotFoundException exception) 
         {
             throw new RuntimeException(exception);
